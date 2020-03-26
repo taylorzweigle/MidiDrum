@@ -4,8 +4,8 @@ export class Drum {
         this.note = note
         this.graphicVisibilityState = false;
         this.drumId.style.visibility = "hidden";
-        this.NOTE_DOWN = 144;
-        this.NOTE_UP = 128;
+        this.NOTE_DOWN = 153;
+        this.NOTE_UP = 137;
     }
 
     setDrum(dataRow) {

@@ -1,6 +1,7 @@
 # Gregary C. Zweigle, 2020
 
 import fifo
+import numpy as np
 import rtmidi.midiutil as rtmu
 import rtmidi as rtm
 import time
@@ -37,15 +38,15 @@ class MidiDriver:
         self.midi_in.close_port()
         print("Deleted the MIDI Driver.")
 
-    # Four values are written to the fifo for every MIDI event.
-    @staticmethod
-    def fifo_num_data():
-        return 4
-
-    # Point for server to get the MIDI data.
-    def get_data_from_fifo(self):
-        data, valid = self.fifo.get()
-        return data, valid
+    def get_data_from_midi_driver(self):
+        midi_data = np.zeros((self.fifo.get_fifo_length(), 4))
+        for ind in range(self.fifo.get_fifo_length()):
+            data, valid = self.fifo.get()
+            if not valid:
+                break
+            else:
+                midi_data[ind, :] = data
+        return midi_data
 
     # This info was helpful for debugging the physical MIDI connections.
     def tell_me_everything(self, port_name):

@@ -22,7 +22,7 @@ def main_page():
 
 @socket_io.on('client_ready')
 def pass_along_data_from_client(message):
-    ss.server(socket_io)
+    ss.server(socket_io, message['start_audio_driver'])
 
 
 if __name__ == '__main__':

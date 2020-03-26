@@ -10,6 +10,9 @@ class Fifo:
         self.fifo_length = fifo_length
         print("Initialized the FIFO.")
 
+    def get_fifo_length(self):
+        return self.fifo_length
+
     def put(self, data):
         if len(self.fifo) < self.fifo_length:
             self.fifo.append(data)
