@@ -17,24 +17,22 @@ class Server:
             fifo_length = 30
             self.mdw = midi_driver.MidiDriver(fifo_length)
         sample_rate = 44100
-        bytes_per_channel_per_callback = 1024
-        downsample_ratio = 128
+        bytes_per_channel_per_callback = 2048
+        self.downsample_ratio = 128
         fifo_length = 10
         self.aio = audio_driver.AudioInOut(sample_rate,
-        bytes_per_channel_per_callback, downsample_ratio, fifo_length)
-        self.downsample_rate = 128
+        bytes_per_channel_per_callback, self.downsample_ratio, fifo_length)
         print("Initialized the Server.")
 
     def server(self, socket_io, start_audio_driver):
         if start_audio_driver:
             self.aio.start_audio_driver()
-        midi_data = self.mdw.get_data_from_midi_driver()
-        audio_left, audio_right = self.aio.get_data_from_audio_driver()
-        self.build_and_send_data(socket_io, midi_data, audio_left, audio_right)
-
-    @staticmethod
-    def build_and_send_data(socket_io, midi_data, audio_left, audio_right):
-        transmit_dictionary = {'midi_data': midi_data.tolist(),
-                               'audio_left' : audio_left.tolist(),
-                               'audio_right' : audio_right.tolist()}
+        midi_rows, midi_data = self.mdw.get_data_from_midi_driver()
+        audio_rows, audio_left, audio_right = self.aio.get_data_from_audio_driver()
+        transmit_dictionary = {'midi_rows': midi_rows,
+                               'midi_data': midi_data.tolist(),
+                               'audio_rows': audio_rows,
+                               'audio_left': audio_left.tolist(),
+                               'audio_right': audio_right.tolist()
+                               }
         socket_io.emit('data_from_server', transmit_dictionary)

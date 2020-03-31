@@ -27,7 +27,7 @@ class MidiCallback:
 class MidiDriver:
 
     def __init__(self, fifo_length):
-        port = 1  # Change this to select associated MIDI device.
+        port = 0  # Change this to select associated MIDI device.
         self.fifo = fifo.Fifo(fifo_length)
         self.midi_in, port_name = rtmu.open_midiinput(port)
         self.midi_in.set_callback(MidiCallback(port_name, self.fifo))
@@ -40,13 +40,15 @@ class MidiDriver:
 
     def get_data_from_midi_driver(self):
         midi_data = np.zeros((self.fifo.get_fifo_length(), 4))
+        count = 0
         for ind in range(self.fifo.get_fifo_length()):
             data, valid = self.fifo.get()
             if not valid:
                 break
             else:
                 midi_data[ind, :] = data
-        return midi_data
+                count += 1
+        return count, midi_data
 
     # This info was helpful for debugging the physical MIDI connections.
     def tell_me_everything(self, port_name):

@@ -8,17 +8,12 @@ export class TimelineDisplay {
         for(let i = 0; i < width; i++) { this.audioDisplayData.push(0); }
     }
 
-    saveAudioData(audio_left, width) {
-        for(let row = 0; row < audio_left.length; row++) {
-            if(audio_left[row][0] != 0) {
-                for(let col = 0; col < audio_left[0].length; col++) {
-                    if(this.audioDisplayData.length >= width) {
-                        this.audioDisplayData.shift();
-                    }
-                    this.audioDisplayData.push(audio_left[row][col]);
-                }
+    saveAudioData(audio_input, audio_rows) {
+        for(let row = 0; row < audio_rows; row++) {
+            for(let col = 0; col < audio_input[0].length; col++) {
+                this.audioDisplayData.shift();
+                this.audioDisplayData.push(audio_input[row][col]);
             }
-            else { break; }
         }
     }
 

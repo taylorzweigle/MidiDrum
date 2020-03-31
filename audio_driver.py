@@ -49,7 +49,7 @@ class AudioInOut:
         #print("Got {0} data sets of Audio: delta_t = {1}".format(count,
         #time.time() - self.get_last_time))
         self.get_last_time = time.time()
-        return audio_left, audio_right
+        return count, audio_left, audio_right
 
     def callback(self, in_data, frame_count, time_info, status):
 
