@@ -1,10 +1,11 @@
+//Taylor Zweigle
 export class Drum {
     constructor(document, drumId, note) {
         this.note = note;
         document.getElementById(drumId).style.visibility = 'hidden';
         this.velocityRings = document.getElementsByClassName(`${drumId}Ring`);
         this.NOTE_DOWN = 144; //Keyboard 144, Drum 153
-        this.NOTE_UP = 128;   //Keyboard 138, Drum 128
+        this.NOTE_UP = 128;   //Keyboard 128, Drum ???
     }
 
     setDrum(dataRow) {

@@ -13,6 +13,12 @@ class Fifo:
     def get_fifo_length(self):
         return self.fifo_length
 
+    def clear(self):
+        self.fifo.clear()
+
+    def get_num_fifo_values(self):
+        return len(self.fifo)
+
     def put(self, data):
         if len(self.fifo) < self.fifo_length:
             self.fifo.append(data)

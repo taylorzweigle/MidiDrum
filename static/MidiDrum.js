@@ -1,17 +1,14 @@
 //Taylor Zweigle
+import { Midi } from './Midi.js';
 import { Drum } from './Drum.js';
 import { TimelineDisplay } from './TimelineDisplay.js';
 
 var socket = io.connect("http://localhost:5000");
 
-let audioOn = false;
+let midi = new Midi();
 
-let canvas = document.getElementById("myCanvas");
-let context = canvas.getContext("2d");
-const CANVAS_HEIGHT = 150;
-
-//let keyCodes = {"Kick":36, "Snare":38, "Tom1":48, "Tom2":45, "Tom3":43, "HighHat":46, "Crash":49, "Ride":51};
-let keyCodes = {"Kick":59, "Snare":60, "Tom1":62, "Tom2":64, "Tom3":65, "HighHat":67, "Crash":69, "Ride":71};
+//let keyCodes = {"Kick":36, "Snare":38, "Tom1":48, "Tom2":45, "Tom3":43, "HighHat":46, "Crash":49, "Ride":51}; //Drum
+let keyCodes = {"Kick":59, "Snare":60, "Tom1":62, "Tom2":64, "Tom3":65, "HighHat":67, "Crash":69, "Ride":71}; //Piano
 
 let kick = new Drum(document, "Kick", keyCodes["Kick"]);
 let snare = new Drum(document, "Snare", keyCodes["Snare"]);
@@ -21,6 +18,12 @@ let tom3 = new Drum(document, "Tom3", keyCodes["Tom3"]);
 let highHat = new Drum(document, "HighHat", keyCodes["HighHat"]);
 let crash = new Drum(document, "Crash", keyCodes["Crash"]);
 let ride = new Drum(document, "Ride", keyCodes["Ride"]);
+
+let audioOn = true;
+
+let canvas = document.getElementById("myCanvas");
+let context = canvas.getContext("2d");
+const CANVAS_HEIGHT = 150;
 
 let leftTimelineDisplay = new TimelineDisplay();
 let rightTimelineDisplay = new TimelineDisplay();
@@ -39,27 +42,40 @@ window.dispatchEvent(new Event('resize'));
 socket.emit('client_ready', {'start_audio_driver' : audioOn});
 
 socket.on('data_from_server', function (data_from_server) {
-    var midi_data = data_from_server['midi_data'];
-    var audio_rows = data_from_server['audio_rows'];
-    var audio_left = data_from_server['audio_left'];
-    var audio_right = data_from_server['audio_right'];
+    let midi_data = data_from_server['midi_data'];
+    let midi_rows = data_from_server['midi_rows'];
+    let audio_left = data_from_server['audio_left'];
+    let audio_right = data_from_server['audio_right'];
 
-    leftTimelineDisplay.saveAudioData(audio_left, audio_rows);
-    leftTimelineDisplay.drawTimeline(context, 0, canvas.width, CANVAS_HEIGHT);
-    rightTimelineDisplay.saveAudioData(audio_right, audio_rows);
-    rightTimelineDisplay.drawTimeline(context, CANVAS_HEIGHT, canvas.width, CANVAS_HEIGHT);
+    midi.updateBuffers(midi_data, midi_rows);
 
-    for(let row = 0; row < data_from_server['midi_rows']; row++) {
-        kick.setDrum(midi_data[row]);
-        snare.setDrum(midi_data[row]);
-        tom1.setDrum(midi_data[row]);
-        tom2.setDrum(midi_data[row]);
-        tom3.setDrum(midi_data[row]);
-        highHat.setDrum(midi_data[row]);
-        crash.setDrum(midi_data[row]);
-        ride.setDrum(midi_data[row]);
-    }
+    leftTimelineDisplay.updateBuffers(audio_left);
+    rightTimelineDisplay.updateBuffers(audio_right);
 
     // After finished displaying the data, tell the server to send more data.
     socket.emit('client_ready', {'start_audio_driver' : false});
 });
+
+function animate() {
+    requestAnimationFrame(animate);
+
+    while(!midi.bufferEmpty()) {
+        let midi_data = [];
+        
+        midi.readBuffer(midi_data);
+
+        kick.setDrum(midi_data);
+        snare.setDrum(midi_data);
+        tom1.setDrum(midi_data);
+        tom2.setDrum(midi_data);
+        tom3.setDrum(midi_data);
+        highHat.setDrum(midi_data);
+        crash.setDrum(midi_data);
+        ride.setDrum(midi_data);
+    }
+
+    leftTimelineDisplay.drawTimeline(context, 0, canvas.width, CANVAS_HEIGHT);
+    rightTimelineDisplay.drawTimeline(context, CANVAS_HEIGHT, canvas.width, CANVAS_HEIGHT);
+}
+
+animate();
