@@ -27,7 +27,7 @@ class MidiCallback:
 class MidiDriver:
 
     def __init__(self, fifo_length):
-        port = 0  # Change this to select associated MIDI device.
+        port = 1  # Change this to select associated MIDI device.
         self.fifo = fifo.Fifo(fifo_length)
         self.midi_in, port_name = rtmu.open_midiinput(port)
         self.midi_in.set_callback(MidiCallback(port_name, self.fifo))

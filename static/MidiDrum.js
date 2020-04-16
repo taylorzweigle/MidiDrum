@@ -1,4 +1,4 @@
-//Taylor Zweigle
+//Taylor Zweigle, 2020
 import { Midi } from './Midi.js';
 import { Drum } from './Drum.js';
 import { TimelineDisplay } from './TimelineDisplay.js';
@@ -19,19 +19,17 @@ let highHat = new Drum(document, "HighHat", keyCodes["HighHat"]);
 let crash = new Drum(document, "Crash", keyCodes["Crash"]);
 let ride = new Drum(document, "Ride", keyCodes["Ride"]);
 
-let audioOn = true;
-
 let canvas = document.getElementById("myCanvas");
 let context = canvas.getContext("2d");
 const CANVAS_HEIGHT = 150;
 
-let leftTimelineDisplay = new TimelineDisplay();
-let rightTimelineDisplay = new TimelineDisplay();
+let leftTimelineDisplay = new TimelineDisplay(4, 20, "#981e32");
+let rightTimelineDisplay = new TimelineDisplay(4, 20, "#981e32");
 
 window.addEventListener('resize', function(event) {
-    context.clearRect(0, 0, canvas.width, CANVAS_HEIGHT*2);
+    context.clearRect(0, 0, canvas.width, CANVAS_HEIGHT*2 + 10);  // Bad!!
     canvas.width = window.innerWidth - 36;
-    canvas.height = CANVAS_HEIGHT*2;
+    canvas.height = CANVAS_HEIGHT*2 + 10;
     leftTimelineDisplay.resizeTimeline(canvas.width);
     rightTimelineDisplay.resizeTimeline(canvas.width);
 });
@@ -39,7 +37,7 @@ window.addEventListener('resize', function(event) {
 window.dispatchEvent(new Event('resize'));
 
 // Tell the server to start sending data.
-socket.emit('client_ready', {'start_audio_driver' : audioOn});
+socket.emit('client_ready', {'start_audio_driver' : true});
 
 socket.on('data_from_server', function (data_from_server) {
     let midi_data = data_from_server['midi_data'];
@@ -74,8 +72,8 @@ function animate() {
         ride.setDrum(midi_data);
     }
 
-    leftTimelineDisplay.drawTimeline(context, 0, canvas.width, CANVAS_HEIGHT);
-    rightTimelineDisplay.drawTimeline(context, CANVAS_HEIGHT, canvas.width, CANVAS_HEIGHT);
+    leftTimelineDisplay.draw(context, {"yLoc": 0, "width": canvas.width, "height": CANVAS_HEIGHT});
+    rightTimelineDisplay.draw(context, {"yLoc": (CANVAS_HEIGHT + 10), "width": canvas.width, "height": CANVAS_HEIGHT});
 }
 
 animate();

@@ -1,4 +1,4 @@
-//Taylor Zweigle
+//Taylor Zweigle, 2020
 export class Midi {
     constructor() {
         this.midiData = [];

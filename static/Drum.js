@@ -1,4 +1,4 @@
-//Taylor Zweigle
+//Taylor Zweigle, 2020
 export class Drum {
     constructor(document, drumId, note) {
         this.note = note;
