@@ -3,6 +3,7 @@
 import eventlet
 from flask import Flask, render_template
 from flask_socketio import SocketIO
+import json
 import server
 
 eventlet.monkey_patch()
@@ -19,6 +20,11 @@ def main_page():
     print("Rendering initial HTML page.")
     return render_template('MidiDrum.html')
 
+@socket_io.on('get_json_data')
+def get_json(filename):
+    with open(filename, "r") as f:
+        params = json.load(f)
+        socket_io.emit('json_data', params)
 
 @socket_io.on('client_ready')
 def pass_along_data_from_client(message):

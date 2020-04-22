@@ -1,6 +1,6 @@
 //Taylor Zweigle, 2020
 export class TimelineDisplay {
-    constructor(numVert, numHoriz, color) {
+    constructor() {
         this.audioDisplayData = [];
         this.bufferData = [];
         this.numLocations = 2048 * 10;
@@ -14,9 +14,9 @@ export class TimelineDisplay {
         // So, we assume that the actual max value will be about half of that.
         // And, in the rare case it exceeds, there is a clip function too.
         this.maxValue = 16384;
-        this.numVerticalTickmarks = numVert;
-        this.numHorizontalTickmarks = numHoriz;
-        this.waveformStyle = color;
+        this.numVerticalTickmarks = 0;
+        this.numHorizontalTickmarks = 0;
+        this.waveformStyle = "#000000";
         
         for (let k = 0; k < this.numLocations; k++) {
             this.bufferData.push(0);
@@ -28,24 +28,44 @@ export class TimelineDisplay {
         for(let i = 0; i < width; i++) { this.audioDisplayData.push(0); }
     }
 
-    updateBuffers(audioInput) {
-        for(let ind = 0; ind < audioInput.length; ind++) {
+    updateBuffers(audioInputLeft, audioInputRight) {
+        let averageBuffer = [];
+
+        this._averageBuffers(averageBuffer, audioInputLeft, audioInputRight);
+
+        for(let ind = 0; ind < averageBuffer.length; ind++) {
             if (this.writeLocation == this.numLocations-1) {
                 this.writeLocation = 0;
             }
             else {
                 this.writeLocation++;
             }
-            this.bufferData[this.writeLocation] = audioInput[ind];
+
+            this.bufferData[this.writeLocation] = averageBuffer[ind];
         }
     }
 
-    draw(context, dimensions) {
+    draw(context, parameters, dimensions) {
+        // Before do anything, update the parameters.
+        this.numVerticalTickmarks = parameters.getNumVerticalTickmarks();
+        this.numHorizontalTickmarks = parameters.getNumHorizontalTickmarks();
+        this.waveformStyle = parameters.getWaveformStyle();
         context.clearRect(0, dimensions["yLoc"], dimensions["width"], dimensions["height"]);
         this._drawVerticalTickMarks(context, dimensions);
         this._drawHorizontalTickMarks(context, dimensions);
         this._drawBorder(context, dimensions);
         this._drawTimeline(context, dimensions);
+    }
+
+    _averageBuffers(averageBuffer, audioInputLeft, audioInputRight) {
+        if(audioInputLeft.length == audioInputRight.length) {
+            for(let i = 0; i < audioInputLeft.length; i++) {
+                averageBuffer[i] = ((audioInputLeft[i] + audioInputRight[i]) / 2);
+            }
+        }
+        else { 
+            console.log("ERROR: MISMATCH LENGTH");
+        }
     }
 
     _drawTimeline(context, dimensions) {

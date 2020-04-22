@@ -1,6 +1,7 @@
 # Gregary C. Zweigle, 2020
 
 import audio_driver
+import json
 import midi_driver
 import numpy as np
 import os
@@ -21,6 +22,7 @@ class Server:
             self.aio = audio_driver.AudioInOut(sample_rate,
             bytes_per_channel_per_callback, self.downsample_ratio, fifo_length)
         print("Initialized the Server.")
+
 
     def server(self, socket_io, start_audio_driver):
         if start_audio_driver:

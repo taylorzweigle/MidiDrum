@@ -2,6 +2,7 @@
 import { Midi } from './Midi.js';
 import { Drum } from './Drum.js';
 import { TimelineDisplay } from './TimelineDisplay.js';
+import { Parameters } from './Parameters.js';
 
 var socket = io.connect("http://localhost:5000");
 
@@ -19,26 +20,31 @@ let highHat = new Drum(document, "HighHat", keyCodes["HighHat"]);
 let crash = new Drum(document, "Crash", keyCodes["Crash"]);
 let ride = new Drum(document, "Ride", keyCodes["Ride"]);
 
+let mySVG = document.getElementById("my_SVG");
+
 let canvas = document.getElementById("myCanvas");
 let context = canvas.getContext("2d");
-const CANVAS_HEIGHT = 150;
 
-let leftTimelineDisplay = new TimelineDisplay(4, 20, "#981e32");
-let rightTimelineDisplay = new TimelineDisplay(4, 20, "#981e32");
+let parameters = new Parameters();
+let timelineDisplay = new TimelineDisplay();
 
 window.addEventListener('resize', function(event) {
-    context.clearRect(0, 0, canvas.width, CANVAS_HEIGHT*2 + 10);  // Bad!!
-    canvas.width = window.innerWidth - 36;
-    canvas.height = CANVAS_HEIGHT*2 + 10;
-    leftTimelineDisplay.resizeTimeline(canvas.width);
-    rightTimelineDisplay.resizeTimeline(canvas.width);
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    mySVG.setAttribute("height", ((window.innerHeight - 36) * 0.8));
+    canvas.width = mySVG.width.baseVal.value;
+    canvas.height = window.innerHeight - mySVG.height.baseVal.value;
+    timelineDisplay.resizeTimeline(canvas.width);
 });
 
 window.dispatchEvent(new Event('resize'));
 
-// Tell the server to start sending data.
-socket.emit('client_ready', {'start_audio_driver' : true});
+// Get json parameters from client.
+socket.emit('get_json_data', "data\\parameters.json");
+socket.on('json_data', function(json_data) {
+    parameters.update(json_data);
+});
 
+socket.emit('client_ready', {'start_audio_driver' : true});
 socket.on('data_from_server', function (data_from_server) {
     let midi_data = data_from_server['midi_data'];
     let midi_rows = data_from_server['midi_rows'];
@@ -47,8 +53,7 @@ socket.on('data_from_server', function (data_from_server) {
 
     midi.updateBuffers(midi_data, midi_rows);
 
-    leftTimelineDisplay.updateBuffers(audio_left);
-    rightTimelineDisplay.updateBuffers(audio_right);
+    timelineDisplay.updateBuffers(audio_left, audio_right);
 
     // After finished displaying the data, tell the server to send more data.
     socket.emit('client_ready', {'start_audio_driver' : false});
@@ -72,8 +77,8 @@ function animate() {
         ride.setDrum(midi_data);
     }
 
-    leftTimelineDisplay.draw(context, {"yLoc": 0, "width": canvas.width, "height": CANVAS_HEIGHT});
-    rightTimelineDisplay.draw(context, {"yLoc": (CANVAS_HEIGHT + 10), "width": canvas.width, "height": CANVAS_HEIGHT});
+    timelineDisplay.draw(context, parameters,
+        {"yLoc": 0, "width": canvas.width, "height": canvas.height});
 }
 
 animate();
