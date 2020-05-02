@@ -1,5 +1,13 @@
 { 
-    "waveformStyle": "#981e32",
     "numVerticalTickmarks": 4,
-    "numHorizontalTickmarks": 20
+    "numHorizontalTickmarks": 20,
+    "waveformStyle": "#981e32",
+    "kickColor": "#000000",
+    "snareColor": "#40a8c4",
+    "tom1Color": "#ece34a",
+    "tom2Color": "#f7aa00",
+    "tom3Color": "#f07810",
+    "highHatColor": "#88dfac",
+    "crashColor": "#c50d66",
+    "rideColor": "#b336d1"
 }

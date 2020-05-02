@@ -2,13 +2,25 @@
 <html>
   <head>
 	<script src="static/jquery-3.5.0.min.js"></script>
+	<link rel="stylesheet" href="static/bootstrap-4.0.0-dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="static/MidiDrum.css">
   </head>
 <body>
-  <canvas id="myCanvas"></canvas>
-  <!--SVG-START-->
+	<div class="container">
+		<div class="row">
+			<div id="timelineCell" class="col-sm-8">
+				<canvas id="timelineCanvas"></canvas>
+			</div>
+			<div id="parametersCell" class="col-sm-4">
+				<canvas id="parametersCanvas"></canvas>
+			</div>
+		</div>
+		<div class="row">
+			<div id="svgCell" class="col-sm-8">
+				<!--SVG-START-->
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 24.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" id="my_SVG" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+<!-- Generator: Adobe Illustrator 24.1.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 1920 1080" style="enable-background:new 0 0 1920 1080;" xml:space="preserve">
 <style type="text/css">
 	.st0{fill:#B4B4B4;}
@@ -48,33 +60,33 @@
 	<g>
 		<path d="M704,1045c-69.5,0-134.7-27-183.8-76.2S444,854.5,444,785s27-134.7,76.2-183.8S634.5,525,704,525s134.7,27,183.8,76.2
 			S964,715.5,964,785s-27,134.7-76.2,183.8S773.5,1045,704,1045z"/>
-		<path class="st1" d="M704,1015c-61.4,0-119.2-23.9-162.6-67.4C497.9,904.2,474,846.4,474,785s23.9-119.2,67.4-162.6
-			C584.8,578.9,642.6,555,704,555s119.2,23.9,162.6,67.4C910.1,665.8,934,723.6,934,785s-23.9,119.2-67.4,162.6
-			C823.2,991.1,765.4,1015,704,1015z"/>
+		<path id="KickColor" class="st1" d="M704,1015c-61.4,0-119.2-23.9-162.6-67.4C497.9,904.2,474,846.4,474,785
+			s23.9-119.2,67.4-162.6C584.8,578.9,642.6,555,704,555s119.2,23.9,162.6,67.4C910.1,665.8,934,723.6,934,785
+			s-23.9,119.2-67.4,162.6C823.2,991.1,765.4,1015,704,1015z"/>
 		<path class="st2" d="M704,985c-53.4,0-103.7-20.8-141.4-58.6c-37.8-37.8-58.6-88-58.6-141.4s20.8-103.7,58.6-141.4
 			c37.8-37.8,88-58.6,141.4-58.6s103.7,20.8,141.4,58.6c37.8,37.8,58.6,88,58.6,141.4s-20.8,103.7-58.6,141.4
 			C807.7,964.2,757.4,985,704,985z"/>
 	</g>
 	<g>
 		<circle cx="754" cy="308" r="210"/>
-		<circle class="st3" cx="754" cy="308" r="180"/>
+		<circle id="Tom1Color" class="st3" cx="754" cy="308" r="180"/>
 		<circle class="st2" cx="754" cy="308" r="150"/>
 	</g>
 	<g>
 		<circle cx="1185" cy="308" r="210"/>
-		<circle class="st4" cx="1185" cy="308" r="180"/>
+		<circle id="Tom2Color" class="st4" cx="1185" cy="308" r="180"/>
 		<circle class="st2" cx="1185" cy="308" r="150"/>
 	</g>
 	<g>
 		<circle class="st5" cx="356" cy="656" r="200"/>
 		<path class="st6" d="M356,656v200c-109.7,0-200-90.3-200-200s90.3-200,200-200c71.4,0,137.5,38.2,173.2,100L356,656z"/>
 		<path d="M356,656l-34.7,197C226.1,836.2,156,752.7,156,656c0-109.7,90.3-200,200-200c59.1,0,115.2,26.2,153.2,71.4L356,656z"/>
-		<circle class="st7" cx="356" cy="656" r="60"/>
+		<circle id="HighHatColor" class="st7" cx="356" cy="656" r="60"/>
 		<circle cx="356" cy="656" r="35"/>
 	</g>
 	<g>
 		<circle cx="1398" cy="685" r="210"/>
-		<circle class="st8" cx="1398" cy="685" r="180"/>
+		<circle id="Tom3Color" class="st8" cx="1398" cy="685" r="180"/>
 		<circle class="st2" cx="1398" cy="685" r="150"/>
 	</g>
 	<g>
@@ -83,7 +95,7 @@
 			c0,120.8-87.6,225.2-206.6,246.2L1576,336z"/>
 		<path d="M1576,336l-234.9-85.5C1376.9,152,1471.2,86,1576,86c137.2,0,250,112.9,250,250c0,104.9-66,199.1-164.5,234.9L1576,336z"
 			/>
-		<circle class="st9" cx="1576" cy="336" r="60"/>
+		<circle id="RideColor" class="st9" cx="1576" cy="336" r="60"/>
 		<circle cx="1576" cy="336" r="35"/>
 	</g>
 	<g>
@@ -91,7 +103,7 @@
 		<path class="st6" d="M406,285l-43.4,246.2C243.6,510.2,156,405.8,156,285c0-137.1,112.9-250,250-250
 			c120.8,0,225.2,87.6,246.2,206.6L406,285z"/>
 		<path d="M406,285l-85.5,234.9C222,484.1,156,389.9,156,285c0-137.1,112.9-250,250-250c104.9,0,199.1,66,234.9,164.5L406,285z"/>
-		<circle class="st10" cx="406" cy="285" r="60"/>
+		<circle id="CrashColor" class="st10" cx="406" cy="285" r="60"/>
 		<circle cx="406" cy="285" r="35"/>
 	</g>
 </g>
@@ -434,6 +446,12 @@
 </g>
 </svg>
 <!--SVG-END-->
+			</div>
+			<div id="histogramCell" class="col-sm-4">
+				<canvas id="histogramCanvas"></canvas>
+			</div>
+		</div>
+	</div>
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
   <script src="{{url_for('static', filename='MidiDrum.js')}}" type="module"></script>
