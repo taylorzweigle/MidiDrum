@@ -1,7 +1,6 @@
 //Taylor Zweigle, 2020
 export class HistogramDisplay {
     constructor() {
-        this.totalCount = 0;
         this.xAxisFontSize = 16;
         this.yAxisFontSize = 14;
         this.numVerticalTickmarksIncrement = 30;
@@ -10,21 +9,13 @@ export class HistogramDisplay {
 
     drawHistogram(canvas, parameters, drumHeads) {
         let context = canvas.getContext("2d");
-
-        canvas.style.width = canvas.width;
-        canvas.style.height = canvas.height;
-
         context.clearRect(0, 0, canvas.width, canvas.height);
-
-        for(let i = 0; i < drumHeads.length; i++) {
-            this.totalCount += drumHeads[i].getCount();
-        }
 
         this._drawBoundary(canvas, context);
         this._drawVerticalTickMarks(canvas, context);
 
         for(let k = 0; k < drumHeads.length; k++) {
-            this._drawCountBar(canvas, context, parameters, drumHeads[k], (k+2)*this.xAxisFontSize);
+            this._drawCountBar(canvas, context, parameters, drumHeads[k], (k)*this.xAxisFontSize);
         }
     }
 
@@ -37,11 +28,9 @@ export class HistogramDisplay {
     }
 
     _drawVerticalTickMarks(canvas, context) {
-        let width = canvas.width;
-        let height = canvas.height;
         let axisInc = 0;
 
-        for(let inc = height - 90; inc > 0; inc -= this.numVerticalTickmarksIncrement) {
+        for(let inc = canvas.height - 90; inc > this.numVerticalTickmarksIncrement; inc -= this.numVerticalTickmarksIncrement) {
             context.font = `${this.yAxisFontSize}px Arial`;
             context.fillStyle = "#000000";
             context.fillText(this.numVerticalTickmarksIncrement/this.increment*axisInc, 10, inc);
@@ -49,8 +38,8 @@ export class HistogramDisplay {
             context.beginPath(); 
             context.strokeStyle = "#dddddd";
             context.lineWidth = 1;   
-            context.moveTo(35, inc);
-            context.lineTo(width, inc);
+            context.moveTo(this.yAxisFontSize * 3, inc);
+            context.lineTo(canvas.width, inc);
             context.stroke();
 
             axisInc++;
@@ -61,13 +50,15 @@ export class HistogramDisplay {
         context.rotate(-90 * Math.PI / 180);
         context.font = `${this.xAxisFontSize}px Arial`;
         context.fillStyle = "#000000";
-        context.fillText(drumHead.getName(), -canvas.height + 20, 2*yLoc);
+        context.fillText(drumHead.getName(), -canvas.height + 20, (this.yAxisFontSize * 5) + (2 * yLoc));
         context.rotate(90 * Math.PI / 180);
 
         context.beginPath();
         context.fillStyle = drumHead.getColor(parameters);
-        context.fillRect(2*yLoc - this.xAxisFontSize, canvas.height - 90, this.xAxisFontSize,  drumHead.getCount()*-this.increment);
+        context.fillRect((this.yAxisFontSize * 5) + (2 * yLoc) - this.xAxisFontSize, canvas.height - 90, this.xAxisFontSize,  drumHead.getCount() * -this.increment);
 
-        if(canvas.height - 90 - drumHead.getCount()*this.increment < 0) { this.increment /= 2; }
+        if(canvas.height - 90 - drumHead.getCount() * this.increment < this.numVerticalTickmarksIncrement) { 
+            this.increment /= 2;
+        }
     }
 }
