@@ -1,71 +1,74 @@
 //Taylor Zweigle, 2020
 import { Midi } from './Midi.js';
+import { MidiBuffer } from './MidiBuffer.js';
 import { Drum } from './Drum.js';
 import { TimelineDisplay } from './TimelineDisplay.js';
 import { Parameters } from './Parameters.js';
 import { HistogramDisplay } from './HistogramDisplay.js';
+import { MidiDisplay } from './MidiDisplay.js';
 
 var socket = io.connect("http://localhost:5000");
 
-let midi = new Midi();
+let midi = new Midi("Piano");
+let midiBuffer = new MidiBuffer();
 let parameters = new Parameters();
 
-//let keyCodes = {"Kick":36, "Snare":38, "Tom1":48, "Tom2":45, "Tom3":43, "HighHat":46, "Crash":49, "Ride":51}; //Drum
-let keyCodes = {"Kick":59, "Snare":60, "Tom1":62, "Tom2":64, "Tom3":65, "HighHat":67, "Crash":69, "Ride":71}; //Pian
-
-let drumHeads = [];
-drumHeads.push(new Drum(document, "Kick", keyCodes["Kick"]));
-drumHeads.push(new Drum(document, "Snare", keyCodes["Snare"]));
-drumHeads.push(new Drum(document, "Tom1", keyCodes["Tom1"]));
-drumHeads.push(new Drum(document, "Tom2", keyCodes["Tom2"]));
-drumHeads.push(new Drum(document, "Tom3", keyCodes["Tom3"]));
-drumHeads.push(new Drum(document, "HighHat", keyCodes["HighHat"]));
-drumHeads.push(new Drum(document, "Crash", keyCodes["Crash"]));
-drumHeads.push(new Drum(document, "Ride", keyCodes["Ride"]));
-
-let mySVG = document.getElementById("Layer_1");
-
-let timelineCanvas = document.getElementById("timelineCanvas");
-let timelineContext = timelineCanvas.getContext("2d");
-let parametersCanvas = document.getElementById("parametersCanvas");
-let parametersContext = parametersCanvas.getContext("2d");
-let historgamCanvas = document.getElementById("histogramCanvas");
-let historgamContext = historgamCanvas.getContext("2d");
-
-let timelineCell = document.getElementById("timelineCell");
-let parametersCell = document.getElementById("parametersCell");
-let histogramCell = document.getElementById("histogramCell");
+let drumKit = [];
+let drumHeads = midi.getDrumHeads();
+for(let i = 0; i < drumHeads.length; i++) {
+    drumKit.push(new Drum(document, midi, midi.getDrum(drumHeads[i])));
+}
 
 let timelineDisplay = new TimelineDisplay();
 let histogramDisplay = new HistogramDisplay();
+let midiDisplay = new MidiDisplay(midi);
+
+//SVG and Canvas
+let mySVG = document.getElementById("Layer_1");
+let timelineCanvas = document.getElementById("timelineCanvas");
+let timelineContext = timelineCanvas.getContext("2d");
+let historgamCanvas = document.getElementById("histogramCanvas");
+let midiCanvas = document.getElementById("midiDisplayCanvas");
+let timelineCell = document.getElementById("timelineCell");
+let histogramCell = document.getElementById("histogramCell");
+let midiDisplayCell = document.getElementById("midiDisplayCell");
 
 window.addEventListener('resize', function(event) {
     timelineCanvas.width = timelineCell.offsetWidth;
-    parametersCanvas.width = parametersCell.offsetWidth;
-    historgamCanvas.width = histogramCell.offsetWidth;
+    timelineCanvas.height = 100;
+    midiCanvas.width = midiDisplayCell.offsetWidth;
+    midiCanvas.height = 130;
+    historgamCanvas.width = 320;
     historgamCanvas.height = mySVG.height.baseVal.value;
-
-    timelineDisplay.resizeTimeline(timelineCanvas.width);
 });
 
 window.dispatchEvent(new Event('resize'));
 
+let resetButton = document.getElementById("resetButton");
+resetButton.onclick = function() {
+    for(let i = 0; i < drumKit.length; i++) {
+        drumKit[i].clearCount();
+    }
+    
+    midiDisplay.reset();
+};
+
 // Get json parameters from client.
 socket.emit('get_json_data', "data\\parameters.json");
-socket.on('json_data', function(json_data) {
-    parameters.update(json_data);
+socket.on('json_data', function(jsonData) {
+    parameters.update(jsonData);
 });
 
 socket.emit('client_ready', {'start_audio_driver' : true});
 socket.on('data_from_server', function (data_from_server) {
-    let midi_data = data_from_server['midi_data'];
-    let midi_rows = data_from_server['midi_rows'];
-    let audio_left = data_from_server['audio_left'];
-    let audio_right = data_from_server['audio_right'];
+    let midiData = data_from_server['midi_data'];
+    let midiRows = data_from_server['midi_rows'];
+    let audioLeft = data_from_server['audio_left'];
+    let audioRight = data_from_server['audio_right'];
 
-    midi.updateBuffers(midi_data, midi_rows);
+    midiBuffer.updateBuffers(midiData, midiRows);
 
-    timelineDisplay.updateBuffers(audio_left, audio_right);
+    timelineDisplay.updateBuffers(audioLeft, audioRight);
 
     //After finished displaying the data, tell the server to send more data.
     socket.emit('client_ready', {'start_audio_driver' : false});
@@ -74,26 +77,29 @@ socket.on('data_from_server', function (data_from_server) {
 function animate() {
     requestAnimationFrame(animate);
 
-    while(!midi.bufferEmpty()) {
-        let midi_data = [];
-        
-        midi.readBuffer(midi_data);
+    midiDisplay.shiftWriteLocation();
+    // Right here we need to move the write pointer for the midi buffer.
 
-        for(let i = 0; i < drumHeads.length; i++) {
-            drumHeads[i].setDrum(midi_data);
+    while(!midiBuffer.bufferEmpty()) {
+        let midiData = [];
+        
+        midiBuffer.readBuffer(midiData);
+
+        for(let i = 0; i < drumKit.length; i++) {
+            drumKit[i].setDrum(midiData);
         }
+
+        midiDisplay.updateBuffers(midiData);
+
+        // Right here we need to check if the drum has been hit for each 
+        // drum head and put a 1 in the row associated with that drum head.
+        // And, remove the outer loop from the code we are working on (because
+        // while loop takes the place of the outer loop in the code we are working on)
     }
 
-    histogramDisplay.drawHistogram(historgamCanvas, parameters, drumHeads);
-
-    parametersContext.beginPath();
-    parametersContext.fillStyle = "#000000";
-    parametersContext.lineWidth = 1;
-    parametersContext.rect(0, 0, parametersCanvas.width, parametersCanvas.height);
-    parametersContext.stroke();
-
-    timelineDisplay.draw(timelineContext, parameters, 
-        {"yLoc": 0, "width": timelineCanvas.width, "height": timelineCanvas.height});
+    timelineDisplay.draw(timelineCanvas);
+    midiDisplay.draw(midiCanvas, parameters, drumKit);
+    histogramDisplay.draw(historgamCanvas, parameters, drumKit);
 }
 
 animate();

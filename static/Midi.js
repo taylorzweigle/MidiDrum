@@ -1,51 +1,33 @@
 //Taylor Zweigle, 2020
 export class Midi {
-    constructor() {
-        this.midiData = [];
-        this.numLocations = 20;
-        this.readLocation = 0;
-        this.writeLocation = 0;
+    constructor(instrument) {
+        this.noteDown = 0;
+        this.noteUp = 0;
+        this.drumHeads = ["Kick", "Snare", "Tom1", "Tom2", "Tom3", "HighHat", "Crash", "Ride"];
+        this.keyCodes = {};
 
-        for(let len = 0; len < this.numLocations; len++) {
-            this.midiData.push([0,0,0,0]);
-        }
+        this._setDevice(instrument);
     }
 
-    updateBuffers(input, numRows) {
-        for(let row = 0; row < numRows; row++) {
-            if(this.writeLocation == this.numLocations-1) {
-                this.writeLocation = 0;
-            }
-            else {
-                this.writeLocation++;
-            }
+    getNoteDown() { return this.noteDown; }
+    getNoteUp() { return this.noteUp; }
+    getDrumHeads() { return this.drumHeads; }
+    getDrum(drumId) { return { name: drumId, note: this.keyCodes[drumId] } }
 
-            for(let col = 0; col < 4; col++) {
-                this.midiData[this.writeLocation][col] = input[row][col];
-            }
+    _setDevice(instrument) {
+        if(instrument == "Piano") {
+            this.keyCodes = {
+                "Kick":59, "Snare":60, "Tom1":62, "Tom2":64, "Tom3":65, "HighHat":67, "Crash":69, "Ride":71
+            };
+            this.noteDown = 144;
+            this.noteUp = 128;
         }
-    }
-
-    bufferEmpty() {
-        let isEmpty = false;
-
-        if(this.readLocation == this.writeLocation) {
-            isEmpty = true;
-        }
-
-        return isEmpty;
-    }
-
-    readBuffer(data) {
-        if (this.readLocation == this.numLocations-1) {
-            this.readLocation = 0;
-        }
-        else {
-            this.readLocation++;
-        }
-
-        for(let col = 0; col < 4; col++) {
-            data.push(this.midiData[this.readLocation][col]);
+        else if(instrument == "Drum") {
+            this.keyCodes = {
+                "Kick":36, "Snare":38, "Tom1":48, "Tom2":45, "Tom3":43, "HighHat":46, "Crash":49, "Ride":51
+            };
+            this.noteDown = 153;
+            this.noteUp = 137;
         }
     }
 }

@@ -1,3 +1,37 @@
-.col-sm-8, .col-sm-4 {
-    padding: 0px 0px;
+#svgCell {
+    position: absolute;
+    width: 650px;
 }
+
+#parametersCell {
+    position: absolute;
+    left: 660px;
+    width: 275px;
+    height: 365px;
+    border: solid black 1px;
+}
+
+#histogramCell {
+    position: absolute;
+    left: 943px;
+}
+
+.btn {
+    border-radius: 0px;
+}
+
+.btn-primary {
+    background-color: #b4b4b4;
+    border-color: #b4b4b4;
+}
+
+.btn-primary:hover, .btn-primary:active {
+    background-color: #40A8C4;
+    border-color: #40A8C4;
+}
+
+/*#resetButton {
+    position: absolute;
+    top: 50px;
+    left: 40px;
+}*/

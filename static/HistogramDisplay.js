@@ -7,7 +7,7 @@ export class HistogramDisplay {
         this.increment = 10;
     }
 
-    drawHistogram(canvas, parameters, drumHeads) {
+    draw(canvas, parameters, drumHeads) {
         let context = canvas.getContext("2d");
         context.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -44,6 +44,13 @@ export class HistogramDisplay {
 
             axisInc++;
         }
+
+        context.beginPath();
+        context.strokeStyle = "#000000";
+        context.lineWidth = 1;   
+        context.moveTo(this.yAxisFontSize * 3, canvas.height - 90);
+        context.lineTo(canvas.width, canvas.height - 90);
+        context.stroke();
     }
 
     _drawCountBar(canvas, context, parameters, drumHead, yLoc) {

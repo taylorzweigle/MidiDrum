@@ -14,18 +14,17 @@ export class TimelineDisplay {
         // So, we assume that the actual max value will be about half of that.
         // And, in the rare case it exceeds, there is a clip function too.
         this.maxValue = 16384;
-        this.numVerticalTickmarks = 0;
-        this.numHorizontalTickmarks = 0;
-        this.waveformStyle = "#000000";
+        this.numVerticalTickmarks = 4;
+        this.numHorizontalTickmarks = 20;
+        this.waveformStyle = "#981e32";
         
         for (let k = 0; k < this.numLocations; k++) {
             this.bufferData.push(0);
         }
-    }
 
-    resizeTimeline(width) {
-        this.audioDisplayData = [];
-        for(let i = 0; i < width; i++) { this.audioDisplayData.push(0); }
+        for(let i = 0; i < 1263; i++) {
+            this.audioDisplayData.push(0);
+        }
     }
 
     updateBuffers(audioInputLeft, audioInputRight) {
@@ -45,16 +44,85 @@ export class TimelineDisplay {
         }
     }
 
-    draw(context, parameters, dimensions) {
-        // Before do anything, update the parameters.
-        this.numVerticalTickmarks = parameters.getNumVerticalTickmarks();
-        this.numHorizontalTickmarks = parameters.getNumHorizontalTickmarks();
-        this.waveformStyle = parameters.getWaveformStyle();
-        context.clearRect(0, dimensions["yLoc"], dimensions["width"], dimensions["height"]);
-        this._drawVerticalTickMarks(context, dimensions);
-        this._drawHorizontalTickMarks(context, dimensions);
-        this._drawBorder(context, dimensions);
-        this._drawTimeline(context, dimensions);
+    draw(canvas) {
+        let context = canvas.getContext("2d");
+
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        this._drawCanvas(context, 0, canvas.width, canvas.height);
+        this._drawWaveform(context, 0, canvas.width, canvas.height);
+    }
+
+    _drawCanvas(context, yLoc, width, height) {
+        this._drawVerticalTickMarks(context, yLoc, width, height);
+        this._drawHorizontalTickMarks(context, yLoc, width, height);
+        this._drawBoundary(context, yLoc, width, height);
+    }
+
+    _drawWaveform(context, yLoc, width, height) {
+        let scaledArray = [];
+        this._buildTimelineBuffer();
+        this._scaleWaveform(scaledArray, height);
+        
+        context.strokeStyle = this.waveformStyle;
+        context.lineWidth = 2;
+        context.beginPath();
+        context.moveTo(0, (yLoc + scaledArray[0]));
+        for(let col = 1; col < scaledArray.length - 80; col++) {
+            context.lineTo(col, (yLoc + scaledArray[col]));
+        }
+        context.stroke();
+    }
+
+    _drawBoundary(context, yLoc, width, height) {
+        context.strokeStyle = "#000000";
+        context.lineWidth = 1;
+        context.beginPath();
+        context.rect(0, yLoc, width, height);
+        context.stroke();
+    }
+
+    _drawVerticalTickMarks(context, yLoc, width, height) {
+        for(let inc = -this.numVerticalTickmarks; inc <= this.numVerticalTickmarks; inc++) {
+            context.beginPath(); 
+            context.strokeStyle = "#dddddd";
+            context.lineWidth = 1;   
+            context.moveTo(width-80, height/2 + (height/2)*inc/this.numVerticalTickmarks + yLoc);
+            context.lineTo(0, height/2 + (height/2)*inc/this.numVerticalTickmarks + yLoc);
+            context.stroke();
+
+            context.beginPath(); 
+            context.strokeStyle = "#000000";
+            context.lineWidth = 1; 
+            context.moveTo(width - 80, height/2 + (height/2)*inc/this.numVerticalTickmarks + yLoc);
+            context.lineTo(width - 80 - 10, height/2 + (height/2)*inc/this.numVerticalTickmarks + yLoc);
+            context.stroke();
+        }
+    }
+
+    _drawHorizontalTickMarks(context, yLoc, width, height) {
+        for(let inc = 0; inc <= this.numHorizontalTickmarks; inc++) {
+            context.beginPath();
+            context.strokeStyle = "#dddddd";
+            context.lineWidth = 1;
+            context.moveTo(width - 80 - (((width - 80)/this.numHorizontalTickmarks)*inc), height + yLoc);
+            context.lineTo(width - 80 - (((width - 80)/this.numHorizontalTickmarks)*inc), height + yLoc - height);
+            context.stroke();
+
+            context.beginPath();
+            context.strokeStyle = "#000000";
+            context.lineWidth = 1;
+            context.moveTo(width - 80 - (((width - 80)/this.numHorizontalTickmarks)*inc), height + yLoc);
+            context.lineTo(width - 80 - (((width - 80)/this.numHorizontalTickmarks)*inc), height + yLoc - 10);
+            context.stroke();
+        }
+
+        context.beginPath();
+        context.strokeStyle = "#000000";
+        context.lineWidth = 1;
+        context.moveTo(width - 80, height + yLoc);
+        context.lineTo(width - 80, height + yLoc - height);
+        context.stroke();
     }
 
     _averageBuffers(averageBuffer, audioInputLeft, audioInputRight) {
@@ -65,76 +133,6 @@ export class TimelineDisplay {
         }
         else { 
             console.log("ERROR: MISMATCH LENGTH");
-        }
-    }
-
-    _drawTimeline(context, dimensions) {
-        let scaledArray = [];
-        this._buildTimelineBuffer();
-        this._scaleWaveform(scaledArray, dimensions["height"]);
-        this._drawWaveform(context, scaledArray, dimensions["yLoc"]);
-    }
-
-    _drawBorder(context, dimensions) {
-        context.strokeStyle = "#000000";
-        context.lineWidth = 1;
-        context.beginPath();
-        context.rect(0, dimensions["yLoc"], dimensions["width"], dimensions["height"]);
-        context.stroke();
-    }
-
-    _drawWaveform(context, scaledArray, yLoc) {
-        context.strokeStyle = this.waveformStyle;
-        context.lineWidth = 2;
-        context.beginPath();
-        context.moveTo(0, (yLoc + scaledArray[0]));
-        for(let col = 1; col < scaledArray.length; col++) {
-            context.lineTo(col, (yLoc + scaledArray[col]));
-        }
-        context.stroke();
-    }
-
-    _drawVerticalTickMarks(context, dimensions) {
-        let yLoc = dimensions["yLoc"];
-        let width = dimensions["width"];
-        let height = dimensions["height"];
-
-        for(let inc = -this.numVerticalTickmarks; inc <= this.numVerticalTickmarks; inc++) {
-            context.beginPath(); 
-            context.strokeStyle = "#dddddd";
-            context.lineWidth = 1;   
-            context.moveTo(width, height/2 + (height/2)*inc/this.numVerticalTickmarks + yLoc);
-            context.lineTo(0, height/2 + (height/2)*inc/this.numVerticalTickmarks + yLoc);
-            context.stroke();
-
-            context.beginPath(); 
-            context.strokeStyle = "#000000";
-            context.lineWidth = 1; 
-            context.moveTo(width, height/2 + (height/2)*inc/this.numVerticalTickmarks + yLoc);
-            context.lineTo(width - 10, height/2 + (height/2)*inc/this.numVerticalTickmarks + yLoc);
-            context.stroke();
-        }
-    }
-
-    _drawHorizontalTickMarks(context, dimensions) {
-        let yLoc = dimensions["yLoc"];
-        let width = dimensions["width"];
-        let height = dimensions["height"];
-
-        for(let inc = 0; inc <= this.numHorizontalTickmarks; inc++) {
-            context.beginPath();
-            context.strokeStyle = "#dddddd";
-            context.lineWidth = 1;
-            context.moveTo(width - ((width/this.numHorizontalTickmarks)*inc), height + yLoc);
-            context.lineTo(width - ((width/this.numHorizontalTickmarks)*inc), height + yLoc - height);
-            context.stroke();
-
-            context.beginPath();
-            context.strokeStyle = "#000000";
-            context.lineWidth = 1;
-            context.moveTo(width - ((width/this.numHorizontalTickmarks)*inc), height + yLoc);
-            context.lineTo(width - ((width/this.numHorizontalTickmarks)*inc), height + yLoc - 10);
-            context.stroke();
         }
     }
 
@@ -190,7 +188,7 @@ export class TimelineDisplay {
                 }
             }
 
-            this.samples += 1/this.numSamplesPerFrame;
+            this.samples += 1/this.numSamplesPerFrame; //44100/60/128 = 5.74samples, 1183px 
             if (this.samples >= 1) {
                 this.samples -= 1;
                 notDone = false;

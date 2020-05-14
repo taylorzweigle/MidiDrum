@@ -6,21 +6,17 @@
 	<link rel="stylesheet" href="static/MidiDrum.css">
   </head>
 <body>
-	<div class="container">
-		<div class="row">
-			<div id="timelineCell" class="col-sm-8">
-				<canvas id="timelineCanvas"></canvas>
-			</div>
-			<div id="parametersCell" class="col-sm-4">
-				<canvas id="parametersCanvas"></canvas>
-			</div>
-		</div>
-		<div class="row">
-			<div id="svgCell" class="col-sm-8">
-				<!--SVG-START-->
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 24.1.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	<div id="timelineCell">
+		<canvas id="timelineCanvas"></canvas>
+	</div>
+	<div id="midiDisplayCell">
+		<canvas id="midiDisplayCanvas"></canvas>
+	</div>
+	<div id="svgCell">
+		<!--SVG-START-->
+		<?xml version="1.0" encoding="utf-8"?>
+		<!-- Generator: Adobe Illustrator 24.1.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+		<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 1920 1080" style="enable-background:new 0 0 1920 1080;" xml:space="preserve">
 <style type="text/css">
 	.st0{fill:#B4B4B4;}
@@ -444,13 +440,15 @@
 		</g>
 	</g>
 </g>
-</svg>
-<!--SVG-END-->
-			</div>
-			<div id="histogramCell" class="col-sm-4">
-				<canvas id="histogramCanvas"></canvas>
-			</div>
-		</div>
+		</svg>
+		<!--SVG-END-->
+	</div>
+	<div id="parametersCell">
+		<div id="resetButton" class="btn btn-primary">Reset Histogram</div>
+	</div>
+	<div id="histogramCell">
+		<canvas id="histogramCanvas"></canvas>
+	</div>
 	</div>
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
