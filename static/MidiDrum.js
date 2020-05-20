@@ -1,11 +1,11 @@
 //Taylor Zweigle, 2020
-import { Midi } from './Midi.js';
-import { MidiBuffer } from './MidiBuffer.js';
-import { Drum } from './Drum.js';
-import { TimelineDisplay } from './TimelineDisplay.js';
-import { Parameters } from './Parameters.js';
-import { HistogramDisplay } from './HistogramDisplay.js';
-import { MidiDisplay } from './MidiDisplay.js';
+import { Midi } from './Core/Midi.js';
+import { Parameters } from './Core/Parameters.js';
+import { MidiBuffer } from './Buffer/MidiBuffer.js';
+import { Drum } from './Display/Drum.js';
+import { AudioDisplay } from './Display/AudioDisplay.js';
+import { HistogramDisplay } from './Display/HistogramDisplay.js';
+import { MidiDisplay } from './Display/MidiDisplay.js';
 
 var socket = io.connect("http://localhost:5000");
 
@@ -19,23 +19,21 @@ for(let i = 0; i < drumHeads.length; i++) {
     drumKit.push(new Drum(document, midi, midi.getDrum(drumHeads[i])));
 }
 
-let timelineDisplay = new TimelineDisplay();
+let audioDisplay = new AudioDisplay();
 let histogramDisplay = new HistogramDisplay();
 let midiDisplay = new MidiDisplay(midi);
 
 //SVG and Canvas
 let mySVG = document.getElementById("Layer_1");
-let timelineCanvas = document.getElementById("timelineCanvas");
-let timelineContext = timelineCanvas.getContext("2d");
+let audioCanvas = document.getElementById("audioCanvas");
 let historgamCanvas = document.getElementById("histogramCanvas");
 let midiCanvas = document.getElementById("midiDisplayCanvas");
-let timelineCell = document.getElementById("timelineCell");
-let histogramCell = document.getElementById("histogramCell");
+let audioCell = document.getElementById("audioCell");
 let midiDisplayCell = document.getElementById("midiDisplayCell");
 
 window.addEventListener('resize', function(event) {
-    timelineCanvas.width = timelineCell.offsetWidth;
-    timelineCanvas.height = 100;
+    audioCanvas.width = audioCell.offsetWidth;
+    audioCanvas.height = 100;
     midiCanvas.width = midiDisplayCell.offsetWidth;
     midiCanvas.height = 130;
     historgamCanvas.width = 320;
@@ -68,7 +66,7 @@ socket.on('data_from_server', function (data_from_server) {
 
     midiBuffer.updateBuffers(midiData, midiRows);
 
-    timelineDisplay.updateBuffers(audioLeft, audioRight);
+    audioDisplay.updateBuffers(audioLeft, audioRight);
 
     //After finished displaying the data, tell the server to send more data.
     socket.emit('client_ready', {'start_audio_driver' : false});
@@ -97,7 +95,7 @@ function animate() {
         // while loop takes the place of the outer loop in the code we are working on)
     }
 
-    timelineDisplay.draw(timelineCanvas);
+    audioDisplay.draw(audioCanvas, parameters);
     midiDisplay.draw(midiCanvas, parameters, drumKit);
     histogramDisplay.draw(historgamCanvas, parameters, drumKit);
 }

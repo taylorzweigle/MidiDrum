@@ -1,5 +1,5 @@
 //Taylor Zweigle, 2020
-export class TimelineDisplay {
+export class AudioDisplay {
     constructor() {
         this.audioDisplayData = [];
         this.bufferData = [];
@@ -14,9 +14,6 @@ export class TimelineDisplay {
         // So, we assume that the actual max value will be about half of that.
         // And, in the rare case it exceeds, there is a clip function too.
         this.maxValue = 16384;
-        this.numVerticalTickmarks = 4;
-        this.numHorizontalTickmarks = 20;
-        this.waveformStyle = "#981e32";
         
         for (let k = 0; k < this.numLocations; k++) {
             this.bufferData.push(0);
@@ -44,84 +41,93 @@ export class TimelineDisplay {
         }
     }
 
-    draw(canvas) {
+    draw(canvas, parameters) {
         let context = canvas.getContext("2d");
 
         context.clearRect(0, 0, canvas.width, canvas.height);
 
-        this._drawCanvas(context, 0, canvas.width, canvas.height);
-        this._drawWaveform(context, 0, canvas.width, canvas.height);
+        this._drawCanvas(context, canvas.width, canvas.height, parameters);
+        this._drawWaveform(context, canvas.width, canvas.height, parameters);
     }
 
-    _drawCanvas(context, yLoc, width, height) {
-        this._drawVerticalTickMarks(context, yLoc, width, height);
-        this._drawHorizontalTickMarks(context, yLoc, width, height);
-        this._drawBoundary(context, yLoc, width, height);
+    _drawCanvas(context, width, height, parameters) {
+        this._drawBoundary(context, width, height);
+        this._drawVerticalTickMarks(context, width, height, parameters);
+        this._drawHorizontalTickMarks(context, width, height, parameters);
     }
 
-    _drawWaveform(context, yLoc, width, height) {
-        let scaledArray = [];
-        this._buildTimelineBuffer();
-        this._scaleWaveform(scaledArray, height);
-        
-        context.strokeStyle = this.waveformStyle;
-        context.lineWidth = 2;
-        context.beginPath();
-        context.moveTo(0, (yLoc + scaledArray[0]));
-        for(let col = 1; col < scaledArray.length - 80; col++) {
-            context.lineTo(col, (yLoc + scaledArray[col]));
-        }
-        context.stroke();
-    }
-
-    _drawBoundary(context, yLoc, width, height) {
+    _drawBoundary(context, width, height) {
         context.strokeStyle = "#000000";
         context.lineWidth = 1;
         context.beginPath();
-        context.rect(0, yLoc, width, height);
+        context.rect(0, 0, width, height);
         context.stroke();
     }
 
-    _drawVerticalTickMarks(context, yLoc, width, height) {
-        for(let inc = -this.numVerticalTickmarks; inc <= this.numVerticalTickmarks; inc++) {
+    _drawVerticalTickMarks(context, width, height, parameters) {
+        let numVerticalTickmarks = parameters.getNumAudioVerticalTickmarks();
+        let labelPadding = parameters.getLabelPadding();
+
+        for(let inc = -numVerticalTickmarks; inc <= numVerticalTickmarks; inc++) {
             context.beginPath(); 
             context.strokeStyle = "#dddddd";
             context.lineWidth = 1;   
-            context.moveTo(width-80, height/2 + (height/2)*inc/this.numVerticalTickmarks + yLoc);
-            context.lineTo(0, height/2 + (height/2)*inc/this.numVerticalTickmarks + yLoc);
+            context.moveTo(width - labelPadding, height/2 + (height/2)*inc/numVerticalTickmarks);
+            context.lineTo(0, height/2 + (height/2)*inc/numVerticalTickmarks);
             context.stroke();
 
             context.beginPath(); 
             context.strokeStyle = "#000000";
             context.lineWidth = 1; 
-            context.moveTo(width - 80, height/2 + (height/2)*inc/this.numVerticalTickmarks + yLoc);
-            context.lineTo(width - 80 - 10, height/2 + (height/2)*inc/this.numVerticalTickmarks + yLoc);
+            context.moveTo(width - labelPadding, height/2 + (height/2)*inc/numVerticalTickmarks);
+            context.lineTo(width - labelPadding - 10, height/2 + (height/2)*inc/numVerticalTickmarks);
             context.stroke();
         }
     }
 
-    _drawHorizontalTickMarks(context, yLoc, width, height) {
-        for(let inc = 0; inc <= this.numHorizontalTickmarks; inc++) {
+    _drawHorizontalTickMarks(context, width, height, parameters) {
+        let numHorizontalTickmarks = parameters.getNumAudioHorizontalTickmarks();
+        let labelPadding = parameters.getLabelPadding();
+
+        for(let inc = 0; inc <= numHorizontalTickmarks; inc++) {
             context.beginPath();
             context.strokeStyle = "#dddddd";
             context.lineWidth = 1;
-            context.moveTo(width - 80 - (((width - 80)/this.numHorizontalTickmarks)*inc), height + yLoc);
-            context.lineTo(width - 80 - (((width - 80)/this.numHorizontalTickmarks)*inc), height + yLoc - height);
+            context.moveTo(width - labelPadding - (((width - labelPadding)/numHorizontalTickmarks)*inc), height);
+            context.lineTo(width - labelPadding - (((width - labelPadding)/numHorizontalTickmarks)*inc), 0);
             context.stroke();
 
             context.beginPath();
             context.strokeStyle = "#000000";
             context.lineWidth = 1;
-            context.moveTo(width - 80 - (((width - 80)/this.numHorizontalTickmarks)*inc), height + yLoc);
-            context.lineTo(width - 80 - (((width - 80)/this.numHorizontalTickmarks)*inc), height + yLoc - 10);
+            context.moveTo(width - labelPadding - (((width - labelPadding)/numHorizontalTickmarks)*inc), height);
+            context.lineTo(width - labelPadding - (((width - labelPadding)/numHorizontalTickmarks)*inc), height - 10);
             context.stroke();
         }
 
         context.beginPath();
         context.strokeStyle = "#000000";
         context.lineWidth = 1;
-        context.moveTo(width - 80, height + yLoc);
-        context.lineTo(width - 80, height + yLoc - height);
+        context.moveTo(width - labelPadding, height);
+        context.lineTo(width - labelPadding, 0);
+        context.stroke();
+    }
+
+    _drawWaveform(context, width, height, parameters) {
+        let scaledArray = [];
+
+        let labelPadding = parameters.getLabelPadding();
+
+        this._buildTimelineBuffer();
+        this._scaleWaveform(scaledArray, height);
+        
+        context.strokeStyle = parameters.getWaveformStyle();
+        context.lineWidth = 2;
+        context.beginPath();
+        context.moveTo(0, scaledArray[0]);
+        for(let col = 1; col < scaledArray.length - labelPadding; col++) {
+            context.lineTo(col, scaledArray[col]);
+        }
         context.stroke();
     }
 

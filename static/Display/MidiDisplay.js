@@ -2,7 +2,6 @@
 export class MidiDisplay {
     constructor(midi) {
         this.midi = midi;
-        this.fontSize = 16;
         this.writeLocation = 0;
         this.readLocation = 0;
         this.numLocations = 1140;
@@ -10,46 +9,12 @@ export class MidiDisplay {
 
         this.drumHeads = midi.getDrumHeads();
         this.keyCodes = [];
+        
         for(let i = 0; i < this.drumHeads.length; i++) {
             this.keyCodes[i] = midi.getDrum(this.drumHeads[i]).note;
         }
 
         this.reset();
-    }
-
-    draw(canvas, parameters, drumHeads) {
-        let context = canvas.getContext("2d");
-
-        context.clearRect(0, 0, canvas.width, canvas.height);
-
-        this._drawCanvas(canvas, context, drumHeads);
-        this._drawMidi(canvas, parameters);
-    }
-
-    _drawCanvas(canvas, context, drumHeads) {
-        this._drawVerticalTickMarks(canvas, context, drumHeads);
-        this._drawHorizontalTickMarks(canvas, context);
-        this._drawBoundary(canvas, context);
-    }
-
-    _drawMidi(canvas, parameters) {
-        let context = canvas.getContext("2d");
-
-        let col2 = this.writeLocation;
-
-        for(let col = 0; col < this.numLocations; col++) {
-            for(let row = 0; row < this.keyCodes.length; row++) {
-                if(this.bufferData[col2][row] == 1) {
-                    context.beginPath();
-                    context.fillStyle = parameters.getDrumColor(this.drumHeads[row]);
-                    context.fillRect(canvas.width-(col*5.74)-90, row*this.fontSize, 12, this.fontSize);
-                }
-            }
-            col2--;
-            if (col2 < 0) {
-                col2 = this.numLocations - 1;
-            }
-        }
     }
 
     shiftWriteLocation() {
@@ -88,35 +53,79 @@ export class MidiDisplay {
         }
     }
 
-    _drawBoundary(canvas, context) {
+    draw(canvas, parameters, drumHeads) {
+        let context = canvas.getContext("2d");
+
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        this._drawCanvas(context, canvas.width, canvas.height, parameters, drumHeads);
+        this._drawMidi(context, canvas.width, canvas.height, parameters);
+    }
+
+    _drawCanvas(context, width, height, parameters, drumHeads) {
+        this._drawBoundary(context, width, height);
+        this._drawVerticalTickMarks(context, width, height, parameters, drumHeads);
+        this._drawHorizontalTickMarks(context, width, height, parameters);
+    }
+
+    _drawBoundary(context, width, height) {
         context.strokeStyle = "#000000";
         context.lineWidth = 1;
         context.beginPath();
-        context.rect(0, 0, canvas.width, canvas.height);
+        context.rect(0, 0, width, height);
         context.stroke();
     }
 
-    _drawVerticalTickMarks(canvas, context, drumHeads) {
+    _drawVerticalTickMarks(context, width, height, parameters, drumHeads) {
+        let fontSize = parameters.getFontSize();
+        let labelPadding = parameters.getLabelPadding();
+
         for(let row = 0; row < drumHeads.length; row++) {
-            context.font = `${this.fontSize}px Arial`;
+            context.font = `${fontSize}px Arial`;
             context.fillStyle = "#000000";
-            context.fillText(drumHeads[row].getName(), canvas.width - 65, (row*this.fontSize)+this.fontSize);
+            context.fillText(drumHeads[row].getName(), width - 65, (row*fontSize)+fontSize);
 
             context.beginPath(); 
             context.strokeStyle = "#dddddd";
             context.lineWidth = 1;
-            context.moveTo(0, (row*this.fontSize)+this.fontSize);
-            context.lineTo(canvas.width - 80, (row*this.fontSize)+this.fontSize);
+            context.moveTo(0, (row*fontSize)+fontSize);
+            context.lineTo(width - labelPadding, (row*fontSize)+fontSize);
             context.stroke();
         }
     }
 
-    _drawHorizontalTickMarks(canvas, context) {
+    _drawHorizontalTickMarks(context, width, height, parameters) {
+        let labelPadding = parameters.getLabelPadding();
+
         context.beginPath();
         context.strokeStyle = "#000000";
         context.lineWidth = 1;
-        context.moveTo(canvas.width - 80, canvas.height);
-        context.lineTo(canvas.width - 80, canvas.height - canvas.height);
+        context.moveTo(width - labelPadding, height);
+        context.lineTo(width - labelPadding, 0);
         context.stroke();
+    }
+
+    _drawMidi(context, width, height, parameters) {
+        let fontSize = parameters.getFontSize();
+        let blockWidth = parameters.getMidiBlockWidth();
+        let labelPadding = parameters.getLabelPadding();
+
+        let col2 = this.writeLocation;
+
+        for(let col = 0; col < this.numLocations; col++) {
+            for(let row = 0; row < this.keyCodes.length; row++) {
+                if(this.bufferData[col2][row] == 1) {
+                    context.beginPath();
+                    context.fillStyle = parameters.getDrumColor(this.drumHeads[row]);
+                    context.fillRect(width - (col*5.74) - labelPadding - blockWidth, row*fontSize, blockWidth, fontSize);
+                }
+            }
+
+            col2--;
+
+            if (col2 < 0) {
+                col2 = this.numLocations - 1;
+            }
+        }
     }
 }

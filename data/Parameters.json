@@ -1,6 +1,8 @@
-{ 
-    "numVerticalTickmarks": 4,
-    "numHorizontalTickmarks": 20,
+{
+    "fontSize": 16,
+    "numAudioVerticalTickmarks": 4,
+    "numAudioHorizontalTickmarks": 20,
+    "numVerticalTickmarksIncrement": 30,
     "waveformStyle": "#981e32",
     "kickColor": "#000000",
     "snareColor": "#40a8c4",
@@ -9,5 +11,7 @@
     "tom3Color": "#f07810",
     "highHatColor": "#88dfac",
     "crashColor": "#c50d66",
-    "rideColor": "#b336d1"
+    "rideColor": "#b336d1",
+    "midiBlockWidth": 15,
+    "labelPadding": 80
 }
