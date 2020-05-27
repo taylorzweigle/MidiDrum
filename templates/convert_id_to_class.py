@@ -36,6 +36,13 @@ while index < len(svg_file):
     index += len(substring)
 
 
+# remove width and height properties that exported svg saves
+# which breaks our code
+stringToDelete = "width=\"1820px\" height=\"1080px\""
+indexWidthHeight = svg_file.find(stringToDelete)
+new_string = svg_file[:indexWidthHeight] + svg_file[indexWidthHeight+len(stringToDelete):]
+svg_file = new_string
+
 # Write the SVG in between the start and end strings.
 string_start = "<!--SVG-START-->"
 string_end = "<!--SVG-END-->"

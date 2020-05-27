@@ -69,10 +69,11 @@ export class MidiDisplay {
     }
 
     _drawBoundary(context, width, height) {
-        context.strokeStyle = "#000000";
+        context.strokeStyle = "#5b5c5f";
+        context.fillStyle = "#28292d";
         context.lineWidth = 1;
         context.beginPath();
-        context.rect(0, 0, width, height);
+        context.fillRect(0, 0, width, height);
         context.stroke();
     }
 
@@ -82,11 +83,11 @@ export class MidiDisplay {
 
         for(let row = 0; row < drumHeads.length; row++) {
             context.font = `${fontSize}px Arial`;
-            context.fillStyle = "#000000";
+            context.fillStyle = "#ffffff";
             context.fillText(drumHeads[row].getName(), width - 65, (row*fontSize)+fontSize);
 
             context.beginPath(); 
-            context.strokeStyle = "#dddddd";
+            context.strokeStyle = "#5b5c5f";
             context.lineWidth = 1;
             context.moveTo(0, (row*fontSize)+fontSize);
             context.lineTo(width - labelPadding, (row*fontSize)+fontSize);
@@ -98,7 +99,7 @@ export class MidiDisplay {
         let labelPadding = parameters.getLabelPadding();
 
         context.beginPath();
-        context.strokeStyle = "#000000";
+        context.strokeStyle = "#ffffff";
         context.lineWidth = 1;
         context.moveTo(width - labelPadding, height);
         context.lineTo(width - labelPadding, 0);

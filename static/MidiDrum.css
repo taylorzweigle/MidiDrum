@@ -1,19 +1,23 @@
-#svgCell {
-    position: absolute;
-    width: 650px;
+body {
+    background-color: #151515;
 }
 
-#parametersCell {
+#svgCell {
     position: absolute;
-    left: 660px;
-    width: 275px;
+    width: 620px;
+}
+
+#velocityCell {
+    position: absolute;
+    left: 627px;
+    width: 315px;
     height: 365px;
-    border: solid black 1px;
 }
 
 #histogramCell {
     position: absolute;
-    left: 943px;
+    left: 949px;
+    width: 315px;
 }
 
 .btn {
@@ -25,13 +29,16 @@
     border-color: #b4b4b4;
 }
 
-.btn-primary:hover, .btn-primary:active {
+.btn-dark:hover, .btn-dark:active {
     background-color: #40A8C4;
     border-color: #40A8C4;
 }
 
-/*#resetButton {
+#resetButton {
     position: absolute;
-    top: 50px;
-    left: 40px;
-}*/
+    display: inline;
+    padding: 4px 8px;
+    top: 560px;
+    left: 957px;
+    z-index: 100;
+}

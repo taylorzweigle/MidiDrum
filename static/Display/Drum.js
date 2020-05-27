@@ -8,11 +8,13 @@ export class Drum {
         this.count = 0;
         this.name = drum.name;
         this.color = "#000000";
+        this.velocity = 0;
     }
 
     //Get class level parameters
     getCount() { return this.count; }
     getName() { return this.name; }
+    getVelocity() { return this.velocity; }
     getColor(parameters) {
         this.color = parameters.getDrumColor(this.name);
         return this.color;
@@ -31,6 +33,8 @@ export class Drum {
                     this.velocityRings[k].style.visibility = "visible";
                 }
             }
+
+            this.velocity = dataRow[3];
         }
         else if(dataRow[1] == this.midi.getNoteUp() && dataRow[2] == this.note) {
             for (let k = 0; k < this.velocityRings.length; k++) {

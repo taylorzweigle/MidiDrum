@@ -1,10 +1,10 @@
 {
     "fontSize": 16,
-    "numAudioVerticalTickmarks": 4,
+    "numAudioVerticalTickmarks": 2,
     "numAudioHorizontalTickmarks": 20,
     "numVerticalTickmarksIncrement": 30,
     "waveformStyle": "#981e32",
-    "kickColor": "#000000",
+    "kickColor": "#ffffff",
     "snareColor": "#40a8c4",
     "tom1Color": "#ece34a",
     "tom2Color": "#f7aa00",

@@ -1,11 +1,28 @@
 //Taylor Zweigle, 2020
-export class HistogramDisplay {
+export class VelocityDisplay {
     constructor() {
-        this.increment = 10;
+        this.lastVelocity = {
+            "Kick": 0,
+            "Snare": 0,
+            "Tom1": 0,
+            "Tom2": 0,
+            "Tom3": 0,
+            "HighHat": 0,
+            "Crash": 0,
+            "Ride": 0,
+        };
+        this.lastOpacity = {
+            "Kick": 1.0,
+            "Snare": 1.0,
+            "Tom1": 1.0,
+            "Tom2": 1.0,
+            "Tom3": 1.0,
+            "HighHat": 1.0,
+            "Crash": 1.0,
+            "Ride": 1.0,
+        };
     }
-
-    reset() { this.increment = 10; }
-
+    
     draw(canvas, parameters, drumHeads) {
         let context = canvas.getContext("2d");
         let fontSize = parameters.getFontSize();
@@ -43,7 +60,7 @@ export class HistogramDisplay {
         for(let inc = height - labelPadding; inc > verticalTickmarksIncrement; inc -= verticalTickmarksIncrement) {
             context.font = `${fontSize}px Arial`;
             context.fillStyle = "#ffffff";
-            context.fillText(verticalTickmarksIncrement/this.increment*axisInc, 10, inc);
+            context.fillText(axisInc * 16, 10, inc);
 
             context.beginPath(); 
             context.strokeStyle = "#5b5c5f";
@@ -65,8 +82,9 @@ export class HistogramDisplay {
 
     _drawCountBar(context, width, height, parameters, drumHead, yLoc) {
         let fontSize = parameters.getFontSize();
-        let verticalTickmarksIncrement = parameters.getNumVerticalTickmarksIncrement();
         let labelPadding = parameters.getLabelPadding();
+        let name = drumHead.getName();
+        let velocity = drumHead.getVelocity();
 
         context.rotate(-90 * Math.PI / 180);
         context.font = `${fontSize}px Arial`;
@@ -75,11 +93,35 @@ export class HistogramDisplay {
         context.rotate(90 * Math.PI / 180);
 
         context.beginPath();
-        context.fillStyle = drumHead.getColor(parameters);
-        context.fillRect((fontSize * 4.3) + (2 * yLoc) - fontSize, height - labelPadding, fontSize,  drumHead.getCount() * -this.increment);
 
-        if(height - labelPadding - drumHead.getCount() * this.increment < verticalTickmarksIncrement) { 
-            this.increment /= 2;
+        if(this.lastVelocity[name] != velocity) {
+            this.lastOpacity[name] = 1.0;
         }
+        else {
+            if(this.lastOpacity[name] > 0) {
+                this.lastOpacity[name] = this.lastOpacity[name] - 0.05;
+            }
+            else {
+                this.lastOpacity[name] = 0.0;
+            }
+        }
+
+        context.fillStyle = this._convertHEXToRGB(drumHead.getColor(parameters), this.lastOpacity[name]);
+        context.fillRect((fontSize * 4.3) + (2 * yLoc) - fontSize, height - labelPadding, fontSize, (240 / 128) * -velocity);
+    
+        this.lastVelocity[name] = velocity;
+    }
+
+    //Take the first two string values from the hex and append it to the
+    //string '0x' to convert to a hexidecimal number which in return has
+    //an integer associated with it. When returning that value, and converting
+    //to an integer, you get the representative integer. For example, 0xff = 255. 
+    _convertHEXToRGB(hex, opacity) {
+        let r = "0x" + hex[1] + hex[2];
+        let g = "0x" + hex[3] + hex[4];
+        let b = "0x" + hex[5] + hex[6];
+        let a = opacity;
+
+        return "rgba(" + +r + "," + +g + "," + +b + "," + a + ")";
     }
 }

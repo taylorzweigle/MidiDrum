@@ -4,6 +4,7 @@ import { Parameters } from './Core/Parameters.js';
 import { MidiBuffer } from './Buffer/MidiBuffer.js';
 import { Drum } from './Display/Drum.js';
 import { AudioDisplay } from './Display/AudioDisplay.js';
+import { VelocityDisplay } from './Display/VelocityDisplay.js';
 import { HistogramDisplay } from './Display/HistogramDisplay.js';
 import { MidiDisplay } from './Display/MidiDisplay.js';
 
@@ -22,23 +23,25 @@ for(let i = 0; i < drumHeads.length; i++) {
 let audioDisplay = new AudioDisplay();
 let histogramDisplay = new HistogramDisplay();
 let midiDisplay = new MidiDisplay(midi);
+let velocityDisplay = new VelocityDisplay();
 
 //SVG and Canvas
-let mySVG = document.getElementById("Layer_1");
 let audioCanvas = document.getElementById("audioCanvas");
 let historgamCanvas = document.getElementById("histogramCanvas");
 let midiCanvas = document.getElementById("midiDisplayCanvas");
+let velocityCanvas = document.getElementById("velocityCanvas");
 let audioCell = document.getElementById("audioCell");
 let midiDisplayCell = document.getElementById("midiDisplayCell");
 
-window.addEventListener('resize', function(event) {
-    audioCanvas.width = audioCell.offsetWidth;
-    audioCanvas.height = 100;
-    midiCanvas.width = midiDisplayCell.offsetWidth;
-    midiCanvas.height = 130;
-    historgamCanvas.width = 320;
-    historgamCanvas.height = mySVG.height.baseVal.value;
-});
+//Set Sizes
+audioCanvas.width = audioCell.offsetWidth;
+audioCanvas.height = 100;
+midiCanvas.width = midiDisplayCell.offsetWidth;
+midiCanvas.height = 130;
+velocityCanvas.width = 315;
+velocityCanvas.height = 365;
+historgamCanvas.width = 315;
+historgamCanvas.height = 365;
 
 window.dispatchEvent(new Event('resize'));
 
@@ -49,6 +52,7 @@ resetButton.onclick = function() {
     }
     
     midiDisplay.reset();
+    histogramDisplay.reset();
 };
 
 // Get json parameters from client.
@@ -97,6 +101,7 @@ function animate() {
 
     audioDisplay.draw(audioCanvas, parameters);
     midiDisplay.draw(midiCanvas, parameters, drumKit);
+    velocityDisplay.draw(velocityCanvas, parameters, drumKit);
     histogramDisplay.draw(historgamCanvas, parameters, drumKit);
 }
 

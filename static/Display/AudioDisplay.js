@@ -8,7 +8,7 @@ export class AudioDisplay {
         this.readLocation = 0;
         this.samples = 0;
         this.numSamplesPerFrame = 44100/60/128;
-        this.autoScale = false;
+        this.autoScale = true;
         // The ADC is 16-bits, which is 0 to 65535.
         // But it is +/-, so the range is -32768 to 32767.
         // So, we assume that the actual max value will be about half of that.
@@ -57,30 +57,40 @@ export class AudioDisplay {
     }
 
     _drawBoundary(context, width, height) {
-        context.strokeStyle = "#000000";
+        context.strokeStyle = "#5b5c5f";
+        context.fillStyle = "#28292d";
         context.lineWidth = 1;
         context.beginPath();
-        context.rect(0, 0, width, height);
+        context.fillRect(0, 0, width, height);
         context.stroke();
     }
 
     _drawVerticalTickMarks(context, width, height, parameters) {
+        let fontSize = parameters.getFontSize();
         let numVerticalTickmarks = parameters.getNumAudioVerticalTickmarks();
         let labelPadding = parameters.getLabelPadding();
 
         for(let inc = -numVerticalTickmarks; inc <= numVerticalTickmarks; inc++) {
+            context.font = `${fontSize}px Arial`;
+            context.fillStyle = "#ffffff";
+            context.fillText(
+                -Math.round(this.maxValue * (inc / numVerticalTickmarks)),
+                width - labelPadding + fontSize,
+                height / 2 + (height / 2)* inc / numVerticalTickmarks
+            );
+            
             context.beginPath(); 
-            context.strokeStyle = "#dddddd";
-            context.lineWidth = 1;   
-            context.moveTo(width - labelPadding, height/2 + (height/2)*inc/numVerticalTickmarks);
-            context.lineTo(0, height/2 + (height/2)*inc/numVerticalTickmarks);
+            context.strokeStyle = "#5b5c5f";
+            context.lineWidth = 1;
+            context.moveTo(width - labelPadding, height / 2 + (height / 2)* inc / numVerticalTickmarks);
+            context.lineTo(0, height / 2 + (height / 2)* inc / numVerticalTickmarks);
             context.stroke();
 
             context.beginPath(); 
-            context.strokeStyle = "#000000";
-            context.lineWidth = 1; 
-            context.moveTo(width - labelPadding, height/2 + (height/2)*inc/numVerticalTickmarks);
-            context.lineTo(width - labelPadding - 10, height/2 + (height/2)*inc/numVerticalTickmarks);
+            context.strokeStyle = "#ffffff";
+            context.lineWidth = 1;
+            context.moveTo(width - labelPadding, height / 2 + (height / 2) * inc / numVerticalTickmarks);
+            context.lineTo(width - labelPadding - 10, height / 2 + (height / 2) * inc / numVerticalTickmarks);
             context.stroke();
         }
     }
@@ -91,14 +101,14 @@ export class AudioDisplay {
 
         for(let inc = 0; inc <= numHorizontalTickmarks; inc++) {
             context.beginPath();
-            context.strokeStyle = "#dddddd";
+            context.strokeStyle = "#5b5c5f";
             context.lineWidth = 1;
             context.moveTo(width - labelPadding - (((width - labelPadding)/numHorizontalTickmarks)*inc), height);
             context.lineTo(width - labelPadding - (((width - labelPadding)/numHorizontalTickmarks)*inc), 0);
             context.stroke();
 
             context.beginPath();
-            context.strokeStyle = "#000000";
+            context.strokeStyle = "#ffffff";
             context.lineWidth = 1;
             context.moveTo(width - labelPadding - (((width - labelPadding)/numHorizontalTickmarks)*inc), height);
             context.lineTo(width - labelPadding - (((width - labelPadding)/numHorizontalTickmarks)*inc), height - 10);
@@ -106,7 +116,7 @@ export class AudioDisplay {
         }
 
         context.beginPath();
-        context.strokeStyle = "#000000";
+        context.strokeStyle = "#ffffff";
         context.lineWidth = 1;
         context.moveTo(width - labelPadding, height);
         context.lineTo(width - labelPadding, 0);
