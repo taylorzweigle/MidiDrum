@@ -25,7 +25,7 @@ export class Drum {
     }
 
     setDrum(dataRow) {
-        if(dataRow[1] == this.midi.getNoteDown() && dataRow[2] == this.note) {
+        if(dataRow[1] == this.midi.getNoteDown() && this.note.includes(dataRow[2])) {
             this.count++;
             let breakVelocity = 128/this.velocityRings.length;
             for (let k = 0; k < this.velocityRings.length; k++) {
@@ -36,7 +36,7 @@ export class Drum {
 
             this.velocity = dataRow[3];
         }
-        else if(dataRow[1] == this.midi.getNoteUp() && dataRow[2] == this.note) {
+        else if(dataRow[1] == this.midi.getNoteUp() && this.note.includes(dataRow[2])) {
             for (let k = 0; k < this.velocityRings.length; k++) {
                 this.velocityRings[k].style.visibility = "hidden";
             }

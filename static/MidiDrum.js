@@ -10,7 +10,7 @@ import { MidiDisplay } from './Display/MidiDisplay.js';
 
 var socket = io.connect("http://localhost:5000");
 
-let midi = new Midi("Piano");
+let midi = new Midi("Drum");
 let midiBuffer = new MidiBuffer();
 let parameters = new Parameters();
 
