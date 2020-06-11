@@ -39,7 +39,7 @@ export class Midi {
                 "Tom1": [48, 50],
                 "Tom2": [45, 47],
                 "Tom3": [43, 58],
-                "HighHat": [26, 46],
+                "HighHat": [4, 26, 46],
                 "Crash": [49, 55],
                 "Ride": [51, 59]
             };

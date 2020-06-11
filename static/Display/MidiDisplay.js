@@ -9,7 +9,7 @@ export class MidiDisplay {
 
         this.drumHeads = midi.getDrumHeads();
         this.keyCodes = [];
-        
+
         for(let i = 0; i < this.drumHeads.length; i++) {
             this.keyCodes[i] = midi.getDrum(this.drumHeads[i]).note;
         }
@@ -38,7 +38,7 @@ export class MidiDisplay {
         // Note that this function only gets called when there is new midiData
         // so if no drums are being being hit, no data is added.      
         for(let row = 0; row < this.keyCodes.length; row++) {
-            if(midiData[1] == this.midi.getNoteDown() && midiData[2] == this.keyCodes[row]) {
+            if(midiData[1] == this.midi.getNoteDown() && this.note.includes(dataRow[2])) {
                 this.bufferData[this.writeLocation][row] = 1;
             }
         }
