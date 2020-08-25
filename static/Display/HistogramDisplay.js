@@ -29,7 +29,7 @@ export class HistogramDisplay {
         context.fillStyle = "#28292d";
         context.lineWidth = 1;
         context.beginPath();
-        context.fillRect(0, 0, width, height);
+        context.fillRect(5, 5, width - 10, height - 10);
         context.stroke();
     }
 
@@ -45,11 +45,11 @@ export class HistogramDisplay {
             context.fillStyle = "#ffffff";
             context.fillText(verticalTickmarksIncrement/this.increment*axisInc, 10, inc);
 
-            context.beginPath(); 
+            context.beginPath();
             context.strokeStyle = "#5b5c5f";
             context.lineWidth = 1;   
             context.moveTo(fontSize * 3, inc);
-            context.lineTo(width - 20, inc);
+            context.lineTo(width - 17, inc);
             context.stroke();
 
             axisInc++;
@@ -59,7 +59,7 @@ export class HistogramDisplay {
         context.strokeStyle = "#ffffff";
         context.lineWidth = 1;   
         context.moveTo(fontSize * 3, height - labelPadding);
-        context.lineTo(width - 20, height - labelPadding);
+        context.lineTo(width - 17, height - labelPadding);
         context.stroke();
     }
 
@@ -71,7 +71,7 @@ export class HistogramDisplay {
         context.rotate(-90 * Math.PI / 180);
         context.font = `${fontSize}px Arial`;
         context.fillStyle = "#ffffff";
-        context.fillText(drumHead.getName(), -height + 10, (fontSize * 4.3) + (2 * yLoc));
+        context.fillText(drumHead.getName(), -height + 15, (fontSize * 4.3) + (2 * yLoc));
         context.rotate(90 * Math.PI / 180);
 
         context.beginPath();

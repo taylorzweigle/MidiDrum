@@ -2,22 +2,64 @@ body {
     background-color: #151515;
 }
 
+#audioCell {
+    position: absolute;
+    top: 7px;
+    left: 7px;
+    width: 1262px;
+    height: 100px;
+    background-color: #28292d;
+    border: 1px #28292d solid;
+    border-radius: 8px;
+    box-shadow: 0px 0px 15px #000000;
+}
+
+#midiDisplayCell {
+    position: absolute;
+    top: 117px;
+    left: 7px;
+    width: 1262px;
+    height: 130px;
+    background-color: #28292d;
+    border: 1px #28292d solid;
+    border-radius: 8px;
+    box-shadow: 0px 0px 15px #000000;
+}
+
 #svgCell {
     position: absolute;
-    width: 620px;
+    top: 257px;
+    left: 7px;
+    width: 622px;
+    height: 352px;
+    background-color: #28292d;
+    border: 1px #28292d solid;
+    border-radius: 8px;
+    box-shadow: 0px 0px 15px #000000;
 }
 
 #velocityCell {
     position: absolute;
-    left: 627px;
-    width: 315px;
-    height: 365px;
+    top: 257px;
+    left: 641px;
+    width: 310px;
+    height: 352px;
+    background-color: #28292d;
+    border: 1px #28292d solid;
+    border-radius: 8px;
+    box-shadow: 0px 0px 15px #000000;
 }
 
 #histogramCell {
     position: absolute;
-    left: 949px;
-    width: 315px;
+    top: 257px;
+    left: 962px;
+    width: 310px;
+    height: 352px;
+    background-color: #28292d;
+    border: 1px #28292d solid;
+    border-radius: 8px;
+    box-shadow: 0px 0px 15px #000000;
 }
 
 .btn {
@@ -38,7 +80,9 @@ body {
     position: absolute;
     display: inline;
     padding: 4px 8px;
-    top: 560px;
-    left: 957px;
+    top: 562px;
+    left: 972px;
     z-index: 100;
+    border: 1px #28292d solid;
+    border-radius: 8px;
 }

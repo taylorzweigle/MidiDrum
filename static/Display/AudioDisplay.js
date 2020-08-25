@@ -61,7 +61,7 @@ export class AudioDisplay {
         context.fillStyle = "#28292d";
         context.lineWidth = 1;
         context.beginPath();
-        context.fillRect(0, 0, width, height);
+        context.fillRect(5, 5, width - 10, height - 10);
         context.stroke();
     }
 
@@ -75,7 +75,7 @@ export class AudioDisplay {
             context.fillStyle = "#ffffff";
             context.fillText(
                 -Math.round(this.maxValue * (inc / numVerticalTickmarks)),
-                width - labelPadding + fontSize,
+                width - 70,
                 height / 2 + (height / 2)* inc / numVerticalTickmarks
             );
             

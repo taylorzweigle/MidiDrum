@@ -10,7 +10,7 @@ import { MidiDisplay } from './Display/MidiDisplay.js';
 
 var socket = io.connect("http://localhost:5000");
 
-let midi = new Midi("Drum");
+let midi = new Midi("Piano");
 let midiBuffer = new MidiBuffer();
 let parameters = new Parameters();
 
@@ -25,25 +25,27 @@ let histogramDisplay = new HistogramDisplay();
 let midiDisplay = new MidiDisplay(midi);
 let velocityDisplay = new VelocityDisplay();
 
-//SVG and Canvas
+//Canvas
 let audioCanvas = document.getElementById("audioCanvas");
 let historgamCanvas = document.getElementById("histogramCanvas");
 let midiCanvas = document.getElementById("midiDisplayCanvas");
 let velocityCanvas = document.getElementById("velocityCanvas");
+
+//HTML Container
 let audioCell = document.getElementById("audioCell");
 let midiDisplayCell = document.getElementById("midiDisplayCell");
+let velocityCell = document.getElementById("velocityCell");
+let histogramCell = document.getElementById("histogramCell");
 
 //Set Sizes
 audioCanvas.width = audioCell.offsetWidth;
 audioCanvas.height = 100;
 midiCanvas.width = midiDisplayCell.offsetWidth;
-midiCanvas.height = 130;
-velocityCanvas.width = 315;
-velocityCanvas.height = 365;
-historgamCanvas.width = 315;
-historgamCanvas.height = 365;
-
-window.dispatchEvent(new Event('resize'));
+midiCanvas.height = midiDisplayCell.offsetHeight;
+velocityCanvas.width = velocityCell.offsetWidth;
+velocityCanvas.height = velocityCell.offsetHeight;
+historgamCanvas.width = histogramCell.offsetWidth;
+historgamCanvas.height = histogramCell.offsetHeight;
 
 let resetButton = document.getElementById("resetButton");
 resetButton.onclick = function() {

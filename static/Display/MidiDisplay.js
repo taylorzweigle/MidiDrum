@@ -38,7 +38,9 @@ export class MidiDisplay {
         // Note that this function only gets called when there is new midiData
         // so if no drums are being being hit, no data is added.      
         for(let row = 0; row < this.keyCodes.length; row++) {
-            if(midiData[1] == this.midi.getNoteDown() && this.note.includes(dataRow[2])) {
+            //TODO: Fix this check due to high hat having multiple key codes
+            //if(midiData[1] == this.midi.getNoteDown() && this.note.includes(dataRow[2])) {
+            if(midiData[1] == this.midi.getNoteDown() && midiData[2] == this.keyCodes[row]) {
                 this.bufferData[this.writeLocation][row] = 1;
             }
         }
@@ -73,7 +75,7 @@ export class MidiDisplay {
         context.fillStyle = "#28292d";
         context.lineWidth = 1;
         context.beginPath();
-        context.fillRect(0, 0, width, height);
+        context.fillRect(5, 5, width - 10, height - 10);
         context.stroke();
     }
 
@@ -84,7 +86,7 @@ export class MidiDisplay {
         for(let row = 0; row < drumHeads.length; row++) {
             context.font = `${fontSize}px Arial`;
             context.fillStyle = "#ffffff";
-            context.fillText(drumHeads[row].getName(), width - 65, (row*fontSize)+fontSize);
+            context.fillText(drumHeads[row].getName(), width - 70, (row*fontSize)+fontSize);
 
             context.beginPath(); 
             context.strokeStyle = "#5b5c5f";
