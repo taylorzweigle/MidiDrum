@@ -1,12 +1,12 @@
-//Taylor Zweigle, 2020
-import { Midi } from './Core/Midi.js';
-import { Parameters } from './Core/Parameters.js';
-import { MidiBuffer } from './Buffer/MidiBuffer.js';
-import { Drum } from './Display/Drum.js';
-import { AudioDisplay } from './Display/AudioDisplay.js';
-import { VelocityDisplay } from './Display/VelocityDisplay.js';
-import { HistogramDisplay } from './Display/HistogramDisplay.js';
-import { MidiDisplay } from './Display/MidiDisplay.js';
+//Taylor Zweigle, Greg Zweigle, 2020
+import { Midi } from "./Core/Midi.js";
+import { Parameters } from "./Core/Parameters.js";
+import { MidiBuffer } from "./Buffer/MidiBuffer.js";
+import { Drum } from "./Display/Drum.js";
+import { AudioDisplay } from "./Display/AudioDisplay.js";
+import { VelocityDisplay } from "./Display/VelocityDisplay.js";
+import { HistogramDisplay } from "./Display/HistogramDisplay.js";
+import { MidiDisplay } from "./Display/MidiDisplay.js";
 
 var socket = io.connect("http://localhost:5000");
 
@@ -58,24 +58,24 @@ resetButton.onclick = function() {
 };
 
 // Get json parameters from client.
-socket.emit('get_json_data', "data\\parameters.json");
-socket.on('json_data', function(jsonData) {
+socket.emit("get_json_data", "data\\parameters.json");
+socket.on("json_data", function(jsonData) {
     parameters.update(jsonData);
 });
 
-socket.emit('client_ready', {'start_audio_driver' : true});
-socket.on('data_from_server', function (data_from_server) {
-    let midiData = data_from_server['midi_data'];
-    let midiRows = data_from_server['midi_rows'];
-    let audioLeft = data_from_server['audio_left'];
-    let audioRight = data_from_server['audio_right'];
+socket.emit("client_ready", {"start_audio_driver" : true});
+socket.on("data_from_server", function (data_from_server) {
+    let midiData = data_from_server["midi_data"];
+    let midiRows = data_from_server["midi_rows"];
+    let audioLeft = data_from_server["audio_left"];
+    let audioRight = data_from_server["audio_right"];
 
     midiBuffer.updateBuffers(midiData, midiRows);
 
     audioDisplay.updateBuffers(audioLeft, audioRight);
 
     //After finished displaying the data, tell the server to send more data.
-    socket.emit('client_ready', {'start_audio_driver' : false});
+    socket.emit("client_ready", {"start_audio_driver" : false});
 });
 
 function animate() {

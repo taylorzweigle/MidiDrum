@@ -23,3 +23,7 @@ The server always sends a MIDI array of size [30][4].  Only the first N rows con
 ## Audio data from Server to Client.
 
 The data is separated into a left and right channel.  There are 10 rows. Each row contains 1024 / 128 = 8 data samples.  The effective sample rate is 44100 / 128 = 5512.8 Hz.  So, this is ok data for graphics displays but not useful for playback.
+
+## Screenshots
+
+![midi-drum-01](https://github.com/taylorzweigle/MidiDrum/blob/master/img/midi-drum-01.PNG)

@@ -1,4 +1,4 @@
-//Taylor Zweigle, 2020
+//Taylor Zweigle, Greg Zweigle, 2020
 export class HistogramDisplay {
     constructor() {
         this.increment = 10;
